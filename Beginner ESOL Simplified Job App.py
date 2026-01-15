@@ -1,4 +1,3 @@
-pip install streamlit
 import streamlit as st
 
 st.title("Job Application Form")
@@ -78,3 +77,4 @@ if st.button("Submit Application"):
   st.write(f"From: {edu_from} To: {edu_to}")
   st.write(f"School: {school_name}")
   st.write(f"Location: {school_city}, {school_state}, {school_zip}")
+
