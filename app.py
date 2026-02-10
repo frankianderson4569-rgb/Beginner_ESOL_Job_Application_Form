@@ -60,7 +60,6 @@ def save_to_github(submission):
         st.error(f"Error saving to GitHub: {e}")
         return False
 
-# 4. REST OF YOUR FORM (everything else below)
 st.markdown('<div class="section-header">Job Application</div>', unsafe_allow_html=True)
 
 # Custom CSS: Plum background, pale blue text, Red Hat font, black inputs
@@ -87,9 +86,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# --- Section: Job Application Header ---
-st.markdown('<div class="section-header">Job Application</div>', unsafe_allow_html=True)
 
 full_name = st.text_input("Full Name", key="full_name")
 address = st.text_input("Address", key="address")
@@ -186,6 +182,7 @@ if st.button("Submit Application", key="submit"):
 
     df.to_csv(file_path, index=False)
     st.success("✅ Thank you! Your application has been submitted.")
+
 
 
 
