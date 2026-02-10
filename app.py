@@ -1,8 +1,67 @@
+# 1. IMPORTS (at the top)
 import sys
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import os
+import base64
+import requests
+from io import StringIO
+
+# 2. CUSTOM CSS
+st.markdown("""
+    <style>
+    ...your CSS here...
+    </style>
+""", unsafe_allow_html=True)
+
+# 3. GITHUB FUNCTION (right after CSS, before the form)
+def save_to_github(submission):
+    try:
+        token = st.secrets["github_token"]
+        owner = "frankianderson4569-rgb"
+        repo = "Beginner_ESOL_Job_Application_Form"
+        file_path = "submissions.csv"
+        
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        
+        get_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
+        response = requests.get(get_url, headers=headers)
+        
+        if response.status_code == 200:
+            file_data = response.json()
+            content = base64.b64decode(file_data["content"]).decode()
+            df = pd.read_csv(StringIO(content))
+            df = pd.concat([df, pd.DataFrame([submission])], ignore_index=True)
+            sha = file_data["sha"]
+        else:
+            df = pd.DataFrame([submission])
+            sha = None
+        
+        csv_content = df.to_csv(index=False)
+        encoded_content = base64.b64encode(csv_content.encode()).decode()
+        
+        push_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
+        payload = {
+            "message": f"New job application submission - {submission['Timestamp']}",
+            "content": encoded_content,
+            "branch": "main"
+        }
+        
+        if sha:
+            payload["sha"] = sha
+        
+        push_response = requests.put(push_url, json=payload, headers=headers)
+        
+        return push_response.status_code == 201 or push_response.status_code == 200
+    except Exception as e:
+        st.error(f"Error saving to GitHub: {e}")
+        return False
+
+# 4. REST OF YOUR FORM (everything else below)
+st.markdown('<div class="section-header">Job Application</div>', unsafe_allow_html=True)
 
 # Custom CSS: Plum background, pale blue text, Red Hat font, black inputs
 st.markdown("""
@@ -127,5 +186,6 @@ if st.button("Submit Application", key="submit"):
 
     df.to_csv(file_path, index=False)
     st.success("✅ Thank you! Your application has been submitted.")
+
 
 
