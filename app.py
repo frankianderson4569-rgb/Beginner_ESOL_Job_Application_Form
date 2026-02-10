@@ -1,5 +1,3 @@
-pip install streamlit pandas
-
 import sys
 !{sys.executable} -m pip install streamlit
 import streamlit as st
@@ -130,3 +128,4 @@ if st.button("Submit Application", key="submit"):
 
     df.to_csv(file_path, index=False)
     st.success("✅ Thank you! Your application has been submitted.")
+
